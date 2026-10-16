@@ -141,9 +141,11 @@ def align_exons(session, opts, cf):
                 aln_rate_s = decay_rate * aln_rate + (1.0 - decay_rate) * aln_rate_s
             etr = (n_rows - i_r - 1) / aln_rate_s        # etr in secs
             etr_s = str(datetime.timedelta(seconds=round(etr)))  # etr as H:M:S
-            logger.info("{i_r}/{n_rows} {p_r:.1f}%; committed; speed={speed:.1f}/{speed_s:.1f} aln/sec (inst/emwa); etr={etr:.0f}s ({etr_s}); {n_tx} tx".format(
-                i_r=i_r, n_rows=n_rows, p_r=i_r / n_rows * 100, speed=aln_rate, speed_s=aln_rate_s, etr=etr,
-                etr_s=etr_s, n_tx=len(tx_acs)))
+            logger.info(
+                "{i_r}/{n_rows} {p_r:.1f}%; committed; speed={speed:.1f}/{speed_s:.1f} aln/sec (inst/emwa); "
+                "etr={etr:.0f}s ({etr_s}); {n_tx} tx".format(
+                    i_r=i_r, n_rows=n_rows, p_r=i_r / n_rows * 100, speed=aln_rate, speed_s=aln_rate_s, etr=etr,
+                    etr_s=etr_s, n_tx=len(tx_acs)))
             tx_acs = set()
             n0, t0 = n1, t1
 
@@ -351,7 +353,8 @@ def load_exonset(session, opts, cf):
                 session.commit()
             else:
                 raise ExonStructureMismatchError(
-                    "Exon structure mismatch: {tx_exon_count} exons in transcript {es.tx_ac}; {aln_exon_count} in alignment {es.alt_ac}".format(
+                    "Exon structure mismatch: {tx_exon_count} exons in transcript {es.tx_ac}; "
+                    "{aln_exon_count} in alignment {es.alt_ac}".format(
                         tx_exon_count=tx_exon_count,
                         aln_exon_count=aln_exon_count,
                         es=es,
@@ -381,7 +384,8 @@ def load_exonset(session, opts, cf):
                 n_skipped += 1
             if i_es % update_period == 0 or i_es + 1 == n_rows:
                 logger.info(
-                    "{i_es}/{n_rows} {p:.1f}%; {n_new} new, {n_unchanged} unchanged, {n_deprecated} deprecated, {n_skipped} skipped, {n_errors} n_errors".format(
+                    "{i_es}/{n_rows} {p:.1f}%; {n_new} new, {n_unchanged} unchanged, {n_deprecated} deprecated, "
+                    "{n_skipped} skipped, {n_errors} n_errors".format(
                         i_es=i_es,
                         n_rows=n_rows,
                         n_new=n_new,
@@ -553,8 +557,9 @@ def load_seqinfo(session, opts, cf):
         if u_seq is None:
             seq = str(sf[si.ac]).upper()
             if int(si.len) != len(seq):
-                raise RuntimeError("Expected a sequence of length {si.len} for {si.md5}; got length {len2} for {si.ac}; skipping".format(
-                    si=si, len2=len(seq)))
+                raise RuntimeError(
+                    "Expected a sequence of length {si.len} for {si.md5}; "
+                    "got length {len2} for {si.ac}; skipping".format(si=si, len2=len(seq)))
             iseq = seq if len(seq) < max_len else None
             u_seq = usam.Seq(seq_id=si.md5, len=si.len, seq=iseq)
             session.add(u_seq)
@@ -602,8 +607,9 @@ def load_seqinfo(session, opts, cf):
 
         i_md5 += 1
         if i_md5 % update_period == 1:
-            logger.info("{n_created} annotations created/{i_md5} sequences seen ({p:.1f}%)/{n_rows} sequences total".format(
-                n_created=n_created, i_md5=i_md5, n_rows=n_rows, md5=md5, p=i_md5 / n_rows * 100))
+            logger.info(
+                "{n_created} annotations created/{i_md5} sequences seen ({p:.1f}%)/{n_rows} sequences total".format(
+                    n_created=n_created, i_md5=i_md5, n_rows=n_rows, md5=md5, p=i_md5 / n_rows * 100))
             session.commit()
     session.commit()
 
@@ -650,8 +656,9 @@ def load_sequences(session, opts, cf):
             logger.error("Expected a sequence of length {len} for {md5} ({acs}); got sequence of length {len2}".format(
                 len=row["len"], md5=row["seq_id"], acs=row["acs"], len2=len(seq)))
             continue
-        assert row["len"] == len(seq), "expected a sequence of length {len} for {md5} ({acs}); got length {len2}".format(
-            len=row["len"], md5=row["seq_id"], acs=row["acs"], len2=len(seq))
+        assert row["len"] == len(seq), (
+            "expected a sequence of length {len} for {md5} ({acs}); got length {len2}".format(
+                len=row["len"], md5=row["seq_id"], acs=row["acs"], len2=len(seq)))
         session.execute(usam.Seq.__table__.update().values(
             seq=seq).where(usam.Seq.seq_id == row["seq_id"]))
         logger.info("loaded sequence of length {len} for {md5} ({acs})".format(
@@ -724,7 +731,8 @@ def load_txinfo(session, opts, cf):
             u_tx = existing[0]
             if (u_tx.cds_start_i, u_tx.cds_end_i) != (cds_start_i, cds_end_i):
                 u_tx.ac = "{u_tx.ac}/{u_tx.cds_start_i}..{u_tx.cds_end_i}".format(u_tx=u_tx)
-                logger.warn("Transcript {ti.ac}: CDS coordinates changed!; renamed to {u_tx.ac}".format(ti=ti, u_tx=u_tx))
+                logger.warn(
+                    "Transcript {ti.ac}: CDS coordinates changed!; renamed to {u_tx.ac}".format(ti=ti, u_tx=u_tx))
                 session.flush()
                 u_tx = None
                 n_cds_changed += 1
@@ -743,11 +751,13 @@ def load_txinfo(session, opts, cf):
                     )
                     if created:
                         logger.info(
-                            f"TranslationException added: {te.tx_ac}, {te.start_position}, {te.end_position}, {te.amino_acid}"
+                            f"TranslationException added: "
+                            f"{te.tx_ac}, {te.start_position}, {te.end_position}, {te.amino_acid}"
                         )
                     else:
                         logger.info(
-                            f"TranslationException already exists: {te.tx_ac}, {te.start_position}, {te.end_position}, {te.amino_acid}"
+                            f"TranslationException already exists: "
+                            f"{te.tx_ac}, {te.start_position}, {te.end_position}, {te.amino_acid}"
                         )
 
 
@@ -818,8 +828,10 @@ def load_txinfo(session, opts, cf):
 
 def _create_translation_exceptions(transcript: str, transl_except_list: List[str]) -> List[Dict]:
     """
-    Create TranslationException object data where start and end positions are 0-based, from transl_except data that is 1-based.
-    For example, [(pos:333..335,aa:Sec), (pos:1017,aa:TERM)] should result in start and end positions [(332, 335), (1016, 1017)]
+    Create TranslationException object data where start and end positions are 0-based, from transl_except data that
+    is 1-based.
+    For example, [(pos:333..335,aa:Sec), (pos:1017,aa:TERM)] should result in start and end positions
+    [(332, 335), (1016, 1017)]
     """
     result = []
 
@@ -913,7 +925,8 @@ def _get_or_insert(
 
     sqlalchemy.orm.exc.MultipleResultsFound may be raised if `row_identifier` does not uniquely identify a row.
     KeyError may be raised if `row_identifier` refers to columns not present as keys in `row`.
-    sqlalchemy.exc.IntegrityError (raised from psycopg2.errors.ForeignKeyViolation) may be raised if a foreign key reference does not exist
+    sqlalchemy.exc.IntegrityError (raised from psycopg2.errors.ForeignKeyViolation) may be raised if a foreign key
+    reference does not exist
     """
     row_filter = {ri: row[ri] for ri in row_identifier}
     try:

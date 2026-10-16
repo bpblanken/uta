@@ -38,7 +38,8 @@ Examples:
 # ./bin/uta -C etc/uta.conf create-schema --drop-current
 ##
 # 2) load data from seq_gene.md.gz files
-# ./bin/uta -C etc/uta.conf load-transcripts-seqgene misc/data/ftp.ncbi.nih.gov/genomes/MapView/Homo_sapiens/sequence/current/initial_release/seq_gene.md.gz
+# ./bin/uta -C etc/uta.conf load-transcripts-seqgene \
+#   misc/data/ftp.ncbi.nih.gov/genomes/MapView/Homo_sapiens/sequence/current/initial_release/seq_gene.md.gz
 ##
 # """
 

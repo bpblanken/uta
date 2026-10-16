@@ -32,4 +32,6 @@ def download_from_eutils(accession: str, file_format: NcbiFileFormatEnum, output
         with open(output_file, 'w') as file:
             file.write(response.text)
     else:
-        raise EutilsDownloadError(f"Failed to download {file_format} file for {accession}. HTTP status code: {response.status_code}")
+        raise EutilsDownloadError(
+            f"Failed to download {file_format} file for {accession}. HTTP status code: {response.status_code}"
+        )

@@ -127,7 +127,10 @@ class Transcript(Base):
     # columns:
     ac = sa.Column(sa.Text, primary_key=True)
     origin_id = sa.Column(
-        sa.Integer, sa.ForeignKey("origin.origin_id", onupdate="CASCADE", ondelete="CASCADE"), nullable=False, index=True)
+        sa.Integer,
+        sa.ForeignKey("origin.origin_id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+        index=True)
     gene_id = sa.Column(sa.Text, sa.ForeignKey("gene.gene_id"), nullable=False, index=True)
     hgnc = sa.Column(sa.Text, nullable=True, index=True)
     cds_start_i = sa.Column(sa.Integer)
@@ -215,7 +218,10 @@ class Exon(Base):
     # columns:
     exon_id = sa.Column(sa.Integer, autoincrement=True, primary_key=True)
     exon_set_id = sa.Column(
-        sa.Integer, sa.ForeignKey("exon_set.exon_set_id", onupdate="CASCADE", ondelete="CASCADE"), nullable=False, index=True)
+        sa.Integer,
+        sa.ForeignKey("exon_set.exon_set_id", onupdate="CASCADE", ondelete="CASCADE"),
+        nullable=False,
+        index=True)
     start_i = sa.Column(sa.Integer, nullable=False)
     end_i = sa.Column(sa.Integer, nullable=False)
     ord = sa.Column(sa.Integer, nullable=False)
