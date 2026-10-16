@@ -84,3 +84,16 @@ package-data = {"sample" = ["*.dat"]}
 [build-system]
 requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+# archive/ and misc/EnsemblUTA/ are dead code (see AGENTS.md)
+extend-exclude = ["tests", "archive", "misc/EnsemblUTA"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90"]
+# E129, E221, E241, E251, E303 are preview-only in ruff
+ignore = ["W291"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
