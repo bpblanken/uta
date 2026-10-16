@@ -56,19 +56,23 @@ Other `origin` rows: `uta0` (41 `NM` `seq_anno` rows only), `ensembl-81` (regist
 - Which Ensembl release and assembly do the 164,601 `genebuild` alignments use? The `ensembl-79` origin name suggests release 79; that was not checked against the data.
 - Should the origin rows `ensembl-81`, `NCBI RefSeq` and `uta0` be removed or documented?
 
-## 3. Manual release steps that are not in `uta-load`
+## 3. Matviews and grants
 
-**Verified.**
-- All four matviews are populated (the dump ends with `REFRESH MATERIALIZED VIEW` for each, in the order used by `loading.refresh_matviews`). `sbin/uta-load` never calls `refresh-matviews`.
-- Every table, view and matview (29 objects) has `GRANT SELECT ... TO PUBLIC`, and the schema has `GRANT USAGE` to `PUBLIC` and `anonymous`. This includes `translation_exception`, created by an alembic migration, so grants were applied after the migration. `sbin/uta-load` never calls `grant-permissions`.
-- All 36 owned objects are owned by `uta_admin`.
+**Matviews (verified).**
+- The dump contains no matview data. Each of the four matviews is created `WITH NO DATA` and followed by a `REFRESH MATERIALIZED VIEW` statement near the end of the file (the order matches `loading.refresh_matviews`). Restoring a dump therefore recomputes the matviews from the restored tables, which is a slow part of first start-up.
+- A matview that was populated when the dump was taken emits a `REFRESH`; an unpopulated one does not. `uta-load` builds the loading schema by restoring the previous dump (`etc/scripts/create-new-schema.sh`), so its matviews are populated (with stale contents) at dump time. The `REFRESH` lines in the dump are therefore **not** evidence that anyone refreshes matviews by hand. (An earlier draft of this note said they were; that inference was wrong.)
+- `sql/refresh-matviews.sql` lists `tx_aln_cigar_mv`, `tx_aln_summary_mv` and `tx_similarity_mv`, none of which exist in this dump (`tx_similarity_v` is a plain view). The file is stale.
 
-**Inferred.** The release procedure includes manual (or undocumented) `uta refresh-matviews` and `uta grant-permissions` runs, and probably `analyze`. Nothing in this repo records when or by whom.
+**Grants (verified).**
+- `uta_20241220` has `GRANT SELECT ... TO PUBLIC` on all 29 tables, views and matviews, plus `GRANT USAGE` on the schema to `PUBLIC` and `anonymous`. All 36 owned objects belong to `uta_admin`. The dump has no `ALTER DEFAULT PRIVILEGES`, and `misc/docker/load-uta.sh` sets none, so these `GRANT`s in the dump are the only source of access for the `anonymous` user.
+- `uta_20240523b` has only 26 `GRANT SELECT` lines for the same 29 objects. The three without `PUBLIC` access are `alembic_version`, `tx_def_summary_dv` and `tx_exon_set_summary_dv`. `uta_20241220` grants all three. `uta_20210129b` has a grant for each of its 26 objects.
+- `translation_exception` and `tx_exon_aln_mv` were created by alembic migrations in 2024, yet both are granted in `20240523b`. No migration in `src/alembic/versions` grants anything.
+
+**Inferred.** Grants are applied by a step outside `uta-load`, most likely `uta grant-permissions` (which would cover every table, view and matview), run by hand. The `20240523b` gap suggests it was not run completely, or ran before the last objects were created, for that release. Nothing in this repo records when or by whom.
 
 **Open questions.**
-- Run the three commands inside `uta-load`, or document them in the README procedure.
-- `sql/refresh-matviews.sql` lists `tx_aln_cigar_mv`, `tx_aln_summary_mv` and `tx_similarity_mv`, none of which exist in this dump (`tx_similarity_v` is a plain view). The file is stale.
-- Are the matviews current relative to `exon_aln`? Populated is verified; freshness is not.
+- Do the missing `20240523b` grants matter? I have not checked what reads `tx_def_summary_dv`, `tx_exon_set_summary_dv` or `alembic_version`; check whether hgvs or other clients query them directly.
+- Run `grant-permissions` inside `uta-load` (and `analyze`, which has no live caller), or document it as a required manual step in the README procedure.
 
 ## 4. Data-quality issues carried since 2020-2021
 
@@ -113,7 +117,7 @@ Other `origin` rows: `uta0` (41 `NM` `seq_anno` rows only), `ensembl-81` (regist
 1. Confirm hgvs / downstream dependence on `ENST`, `genebuild`, `blat` rows before any data removal.
 2. ~~Run the same analysis on `uta_20210129b` and `uta_20240523b`~~ Done; see section 8. Still open: compare these counts with the `sbin/uta-diff` output from the 2024 builds, if the build logs survive (`uta_20240523.pgd.gz.log` / `.loadlog` on dl.biocommons.org).
 3. Restore the dump into Postgres and verify matview freshness and the `tx_exon_aln_v` / `tx_def_summary_v` views against hgvs queries.
-4. Ask previous maintainers what the manual post-load steps are, how SeqRepo snapshots reach `dl.biocommons.org`, and who runs the Docker Hub build (`misc/docker/`).
+4. Ask previous maintainers which manual post-load steps they run (`grant-permissions`, `analyze`), how SeqRepo snapshots reach `dl.biocommons.org`, and who runs the Docker Hub build (`misc/docker/`).
 5. Add a pre-dump validation step (header rows, accession format, orphan rows).
 
 ## 8. Release-to-release comparison
