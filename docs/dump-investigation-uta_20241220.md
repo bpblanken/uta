@@ -66,7 +66,7 @@ Other `origin` rows: `uta0` (41 `NM` `seq_anno` rows only), `ensembl-81` (regist
 **Grants (verified).**
 - `uta_20241220` has `GRANT SELECT ... TO PUBLIC` on all 29 tables, views and matviews, plus `GRANT USAGE` on the schema to `PUBLIC` and `anonymous`. All 36 owned objects belong to `uta_admin`. The dump has no `ALTER DEFAULT PRIVILEGES`, and `misc/docker/load-uta.sh` sets none, so these `GRANT`s in the dump are the only source of access for the `anonymous` user.
 - `uta_20240523b` has only 26 `GRANT SELECT` lines for the same 29 objects. The three without `PUBLIC` access are `alembic_version`, `tx_def_summary_dv` and `tx_exon_set_summary_dv`. `uta_20241220` grants all three. `uta_20210129b` has a grant for each of its 26 objects.
-- `translation_exception` and `tx_exon_aln_mv` were created by alembic migrations in 2024, yet both are granted in `20240523b`. No migration in `src/alembic/versions` grants anything.
+- `translation_exception` and `tx_exon_aln_mv` were created by alembic migrations in 2024, yet both are granted in `20240523b`. The only `GRANT`s in `src/alembic/versions` are `GRANT SELECT ... TO public` on `exon_set_exons_fp_mv` and `tx_exon_set_summary_mv` (re-applied when those are recreated). No migration grants `translation_exception`, `tx_exon_aln_mv`, `alembic_version` or the `_dv` views, so those grants came from somewhere else.
 
 **Inferred.** Grants are applied by a step outside `uta-load`, most likely `uta grant-permissions` (which would cover every table, view and matview), run by hand. The `20240523b` gap suggests it was not run completely, or ran before the last objects were created, for that release. Nothing in this repo records when or by whom.
 
