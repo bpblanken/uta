@@ -18,7 +18,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import text
 import psycopg2.extras
-import six
 from uta_align.align.algorithms import cigar_alignment, needleman_wunsch_gotoh_align
 
 from uta.lru_cache import lru_cache
@@ -84,9 +83,9 @@ def align_exons(session, opts, cf):
         logger.debug("fetching sequence {ac}[{s}:{e}]".format(ac=ac,s=s,e=e))
         seq = sf.fetch(ac,s,e)
         assert seq is not None, "sequence {ac}[{s}:{e}] should never be None (coordinates bogus?)".format(ac=ac,s=s,e=e)
-        if isinstance(seq, six.binary_type):
+        if isinstance(seq, bytes):
             seq = seq.decode("ascii")  # force into unicode
-        assert isinstance(seq, six.text_type)
+        assert isinstance(seq, str)
         return seq
 
     rows = cur.fetchall()

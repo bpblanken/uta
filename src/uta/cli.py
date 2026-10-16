@@ -49,7 +49,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import configparser
 import logging
 import logging.config
-import pkg_resources
 import time
 
 import docopt
@@ -101,7 +100,8 @@ def main():
     cf_loaded = dict()
     for conf_fn in opts["--conf"]:
         if conf_fn not in cf_loaded:
-            cf.readfp(open(conf_fn))
+            with open(conf_fn) as f:
+                cf.read_file(f)
             cf_loaded[conf_fn] = True
             logger.info("loaded " + conf_fn)
 
