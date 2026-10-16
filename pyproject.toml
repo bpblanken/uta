@@ -1,9 +1,9 @@
 [project]
 name = "uta"
-dynamic = ["version"]
+version = "0.0.0"
 description = "Universal Transcript Archive"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 license = {text = "Apache-2.0"}
 
 keywords = [
@@ -50,7 +50,6 @@ dependencies = [
   "eutils>=0.3.2",
   "importlib_resources",
   "more_itertools",
-  "nose",
   "prettytable",
   "psycopg2-binary",
   "pytz",
@@ -83,9 +82,5 @@ uta = "uta.cli:main"
 package-data = {"sample" = ["*.dat"]}
 
 [build-system]
-requires = [
-  "setuptools>=43.0.0",
-  "setuptools_scm==1.11.1",
-  "wheel"
-]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"

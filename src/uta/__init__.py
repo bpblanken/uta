@@ -1,4 +1,4 @@
-import pkg_resources
+import importlib.metadata
 import logging
 import os
 import warnings
@@ -11,8 +11,8 @@ from uta import models
 
 
 try:
-    __version__ = pkg_resources.get_distribution(__package__).version
-except pkg_resources.DistributionNotFound as e:
+    __version__ = importlib.metadata.version(__package__)
+except importlib.metadata.PackageNotFoundError as e:
     warnings.warn(
         "can't get __version__ because %s package isn't installed" % __package__, Warning)
     __version__ = None
