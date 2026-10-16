@@ -60,3 +60,5 @@ tmp
 venv
 nosetests.xml
 .vscode
+
+.venv

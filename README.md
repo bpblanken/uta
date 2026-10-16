@@ -273,25 +273,33 @@ the installation environment.*
 ## Developer Setup
 
 ### Virtual Environment
+UTA uses [uv](https://docs.astral.sh/uv/) and Python 3.12 (see `.python-version`).
 To develop UTA, follow these steps.
 
-1.  Set up a virtual environment using your preferred method.
-    For example:
+1.  [Install uv](https://docs.astral.sh/uv/getting-started/installation/).
+    uv downloads Python 3.12 itself if you don't have it.
 
-        $ python3 -m venv uta-venv
-        $ source uta-venv/bin/activate
-
-2.  Clone UTA and install:
+2.  Clone UTA and install it, with the test dependencies, into `.venv`:
 
         $ git clone git@github.com:biocommons/uta.git
         $ cd uta
-        $ pip install -e .[test]
+        $ uv sync --extra test
 
-3.  Restore a database or load a new one using the instructions [above](#installing-from-database-dumps).
+3.  Install PostgreSQL (the tests start a temporary server with `initdb`, so it
+    must be on your `PATH`). For example, on macOS:
+
+        $ brew install postgresql@17
+        $ export PATH="$(brew --prefix postgresql@17)/bin:$PATH"
 
 4.  To run the tests:
 
-        $ python3 -m unittest
+        $ uv run python -m unittest
+
+    Without PostgreSQL on your `PATH`, the tests that need it fail with
+    `command not found: initdb`; the rest still run.
+
+5.  To work with a real database, restore one using the instructions
+    [above](#installing-from-database-dumps).
 
 ### Docker
 
