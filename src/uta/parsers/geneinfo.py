@@ -11,7 +11,13 @@ class GeneInfoParser(object):
     def __init__(self, fh):
         self._fh = fh
         header = next(self._fh).rstrip()
-        if header != "#Format: tax_id GeneID Symbol LocusTag Synonyms dbXrefs chromosome map_location description type_of_gene Symbol_from_nomenclature_authority Full_name_from_nomenclature_authority Nomenclature_status Other_designations Modification_date (tab is used as a separator, pound sign - start of a comment)":
+        expected_header = (
+            "#Format: tax_id GeneID Symbol LocusTag Synonyms dbXrefs chromosome map_location description "
+            "type_of_gene Symbol_from_nomenclature_authority Full_name_from_nomenclature_authority "
+            "Nomenclature_status Other_designations Modification_date "
+            "(tab is used as a separator, pound sign - start of a comment)"
+        )
+        if header != expected_header:
             raise UTAError("""gene info doesn't contain expected header; got:\n{header}""".format(
                 header=header))
         fields = header.replace("#Format: ", "").replace(

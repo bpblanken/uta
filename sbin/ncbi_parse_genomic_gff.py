@@ -55,10 +55,11 @@ def _sort_exons(exons: List[GFFRecord]) -> List[GFFRecord]:
 
 
 def parse_gff_record(line: str) -> Optional[GFFRecord]:
-    """Parses a single line from a GFF file and returns a GFFRecord if record is an exon aligned to an NC_ chromosome and has a transcript id starting with NM_ or NR_."""
-    # NC_000001.10	BestRefSeq	exon	11874	12227	.	+	.	ID=exon-NR_046018.2-1;Parent=rna-NR_046018.2;Dbxref=GeneID:100287102,Genbank:NR_046018.2,HGNC:HGNC:37102;gbkey=misc_RNA;gene=DDX11L1;product=DEAD/H-box helicase 11 like 1 (pseudogene);pseudo=true;transcript_id=NR_046018.2
-    # NC_000001.10	BestRefSeq	exon	12613	12721	.	+	.	ID=exon-NR_046018.2-2;Parent=rna-NR_046018.2;Dbxref=GeneID:100287102,Genbank:NR_046018.2,HGNC:HGNC:37102;gbkey=misc_RNA;gene=DDX11L1;product=DEAD/H-box helicase 11 like 1 (pseudogene);pseudo=true;transcript_id=NR_046018.2
-    # NC_000001.10	BestRefSeq	exon	13221	14409	.	+	.	ID=exon-NR_046018.2-3;Parent=rna-NR_046018.2;Dbxref=GeneID:100287102,Genbank:NR_046018.2,HGNC:HGNC:37102;gbkey=misc_RNA;gene=DDX11L1;product=DEAD/H-box helicase 11 like 1 (pseudogene);pseudo=true;transcript_id=NR_046018.2
+    """Parses a single line from a GFF file and returns a GFFRecord if record is an exon aligned to an NC_ chromosome
+    and has a transcript id starting with NM_ or NR_."""
+    # NC_000001.10	BestRefSeq	exon	11874	12227	.	+	.	ID=exon-NR_046018.2-1;Parent=rna-NR_046018.2;Dbxref=GeneID:100287102,Genbank:NR_046018.2,HGNC:HGNC:37102;gbkey=misc_RNA;gene=DDX11L1;product=DEAD/H-box helicase 11 like 1 (pseudogene);pseudo=true;transcript_id=NR_046018.2  # noqa: E501
+    # NC_000001.10	BestRefSeq	exon	12613	12721	.	+	.	ID=exon-NR_046018.2-2;Parent=rna-NR_046018.2;Dbxref=GeneID:100287102,Genbank:NR_046018.2,HGNC:HGNC:37102;gbkey=misc_RNA;gene=DDX11L1;product=DEAD/H-box helicase 11 like 1 (pseudogene);pseudo=true;transcript_id=NR_046018.2  # noqa: E501
+    # NC_000001.10	BestRefSeq	exon	13221	14409	.	+	.	ID=exon-NR_046018.2-3;Parent=rna-NR_046018.2;Dbxref=GeneID:100287102,Genbank:NR_046018.2,HGNC:HGNC:37102;gbkey=misc_RNA;gene=DDX11L1;product=DEAD/H-box helicase 11 like 1 (pseudogene);pseudo=true;transcript_id=NR_046018.2  # noqa: E501
 
     fields = line.strip().split("\t")
     if len(fields) != 9:

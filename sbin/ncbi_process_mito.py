@@ -151,7 +151,8 @@ def parse_nomenclature_value(gb_feature: SeqFeature) -> Dict[str, str]:
     """
     Example:
         Key: nomenclature
-        Value: ['Official Symbol: MT-TF | Name: mitochondrially encoded tRNA phenylalanine | Provided by: HGNC:HGNC:7481']
+        Value: ['Official Symbol: MT-TF | Name: mitochondrially encoded tRNA phenylalanine |
+                Provided by: HGNC:HGNC:7481']
     """
     nomenclature_key = "nomenclature"
     nomenclature_results: Dict[str, str] = {}

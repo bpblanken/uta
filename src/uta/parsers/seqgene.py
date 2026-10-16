@@ -6,13 +6,18 @@ from uta.exceptions import *
 
 class SeqGeneParser(object):
 
-    """parse mapping data as from ftp.ncbi.nih.gov/genomes/MapView/Homo_sapiens/sequence/current/initial_release/seq_gene.md.gz"""
+    """parse mapping data as from
+    ftp.ncbi.nih.gov/genomes/MapView/Homo_sapiens/sequence/current/initial_release/seq_gene.md.gz"""
 
     def __init__(self, fh, filter=None):
         self._fh = fh
         self._filter = filter if filter else lambda r: True
         header = next(self._fh).rstrip()
-        if header != "#tax_id	chromosome	chr_start	chr_stop	chr_orient	contig	ctg_start	ctg_stop	ctg_orient	feature_name	feature_id	feature_type	group_label	transcript	evidence_code":
+        expected_header = "\t".join([
+            "#tax_id", "chromosome", "chr_start", "chr_stop", "chr_orient", "contig", "ctg_start", "ctg_stop",
+            "ctg_orient", "feature_name", "feature_id", "feature_type", "group_label", "transcript", "evidence_code",
+        ])
+        if header != expected_header:
             raise UTAError("""file doesn't contain expected header; got:\n{header}""".format(
                 header=header))
         fields = header.replace("#", "").split("\t")
@@ -31,7 +36,8 @@ class SeqGeneParser(object):
 
 # The following code doesn"t work and I don"t know why.
 # class SeqGeneBlockParser(object):
-##     """parse mapping data as from ftp.ncbi.nih.gov/genomes/MapView/Homo_sapiens/sequence/current/initial_release/seq_gene.md.gz"""
+##     """parse mapping data as from
+##     ftp.ncbi.nih.gov/genomes/MapView/Homo_sapiens/sequence/current/initial_release/seq_gene.md.gz"""
 # def __init__(self,fh,filter=None):
 ##         self._sgparser = SeqGeneParser(fh,filter)
 ##
